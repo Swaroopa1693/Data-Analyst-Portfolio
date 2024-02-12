@@ -1,73 +1,209 @@
-#cleaning us_household income
+# US HOUSEHOLD INCOME PROJECT: DATA CLEANING
 
-USE US_income;
+	# Table of Content: 
+	# Removing Duplicates
+	# Standardizing Data
+        # Dealing With Null/Blank Values
+        
+USE us_house_income;
+SELECT * FROM us_household_income; 
+SELECT * FROM us_household_income_statistics;
 
-select * 
-from us_household_income;
+ALTER TABLE us_household_income_statistics RENAME COLUMN `ï»¿id` TO `id`;
 
-select * 
-from us_household_income_statistics;
 
-select count(*) 
-from us_household_income;
+-- REMOVING DUPLICATES --
 
-select count(*) 
-from us_household_income_statistics;
+	-- Part 1: Verifying if there are duplicate rows in the dataset
+	SELECT id, COUNT(id)
+	FROM us_household_income
+	GROUP BY id
+	HAVING COUNT(id) > 1;
 
-select id, count(id)
-from us_household_income
-group by id
-having count(id) > 1;
-
-delete from us_household_income
-where row_id IN
-		(select row_id
-		from
-			(select row_id, 
+	-- Part 2: Locating Row_Id for duplicate rows
+	SELECT row_id
+	FROM (
+		SELECT
+			row_id,
 			id,
-			row_number() over(partition by id order by id) row_num
-			from us_household_income) duplicates
-		where row_num > 1);
+			ROW_NUMBER() OVER(PARTITION BY id ORDER BY id) AS Row_Count
+		FROM us_household_income
+		) AS Row_Table
+	WHERE Row_Count > 1
+	;
+    
+	-- Part 3: Removing duplicate rows from table
+    DELETE FROM us_household_income
+    WHERE row_id IN (
+		SELECT row_id
+		FROM (
+			SELECT
+				row_id,
+				id,
+				ROW_NUMBER() OVER(PARTITION BY id ORDER BY id) AS Row_Count
+			FROM us_household_income
+			) AS Row_Table
+		WHERE Row_Count > 1
+	)
+	;    
+    
+-- STANDARDIZING DATA --
 
-# updating state_names
+	-- Column: State_Name 
 
-UPDATE us_household_income
-set State_name = 'Alabama'
-where State_name = 'alabama';
+		-- Part 1: Verifying if there are name outliers in column 'State_Name'
+		SELECT State_Name, COUNT(State_Name)
+		FROM us_household_income
+		GROUP BY State_Name
+		;
 
-select state_name, count(*)
-from us_household_income
-group by state_name;
+		-- Part 2: Correcting the state names for misspelled entries in the table
+		UPDATE us_household_income
+		SET State_Name = 'Georgia'
+			WHERE State_Name = 'georia'
+		;
+			
+		UPDATE us_household_income
+		SET State_Name = 'Alabama'
+			WHERE State_Name = 'alabama'
+		;
 
-UPDATE us_household_income
-set State_name = 'Georgia'
-where State_name = 'georia';
+	-- Column: Type
 
-select type, count(*)
-from us_household_income
-group by type;
+		-- Part 1: Verifying if there are name outliers in column 'Type'
+		SELECT Type, COUNT(Type)
+		FROM us_household_income
+		GROUP BY Type
+		;
 
-UPDATE us_household_income
-set Type = 'Borough'
-where Type = 'Boroughs';
+		-- Part 2: Correcting the Type for misspelled entries in the table
+		UPDATE us_household_income
+		SET Type = 'Borough'
+			WHERE Type = 'Boroughs'
+		;
 
+-- DEALING WITH NULL/BLANK VALUES --
 
-UPDATE us_household_income
-set Place = 'Autaugaville'
-where county = 'Autauga County'
-and city = 'Vinemont';
+	-- Column: Place
+    
+		-- Part 1: Verifying if there are missing values in column 'Place'
+		SELECT *
+		FROM us_household_income
+		WHERE Place = ''
+		;
 
-select *
-from us_household_income
-where county = 'Autauga County'
-AND place = ' ';
+		-- Part 2: Populating empty cells with the correct location
+		UPDATE us_household_income
+		SET Place = 'Autaugaville'
+			WHERE 
+				County = 'Autauga County' AND
+				City = 'Vinemont'
+		;
+    
+    -- Column: ALand
 
-select ALand, AWater
-from us_household_income
-where (AWater = ' ' or AWater = 0 or AWater IS NULL)
-AND  (ALand = ' ' or ALand = 0 or ALand IS NULL);
+		-- Part 1: Verifying if there are missing values in column 'ALand'
+		SELECT State_Name, County, Place, ALand
+		FROM us_household_income
+		WHERE 
+			ALand = 0 OR 
+			ALand IS NULL OR
+			ALand = ''
+		;
 
-select ALand, AWater
-from us_household_income
-where  (ALand = ' ' or ALand = 0 or ALand IS NULL);
+		-- Part 2: Setting up code to add to UPDATE Statement
 
+		SELECT State_Name, County, Place, ALand, ROUND(AVG(ALand) OVER(PARTITION BY County)) AS Avg_ALand
+		FROM us_household_income
+		ORDER BY 4, 1
+		;
+
+		SELECT *, 
+			CASE 
+				WHEN ALand = 0 THEN ROUND(AVG(ALand) OVER(PARTITION BY County))
+				ELSE ALand
+			END AS Avg_ALand
+		FROM us_household_income
+		;
+
+		SELECT *
+		FROM us_household_income t1
+		JOIN (
+			SELECT *, 
+				CASE 
+					WHEN ALand = 0 THEN ROUND(AVG(ALand) OVER(PARTITION BY County))
+					ELSE ALand
+				END AS Avg_ALand
+			FROM us_household_income
+			) AS t2
+		ON t1.row_id = t2.row_id
+		;
+
+		-- Part 3: Populating empty cells with the average ALand value by County 
+
+		UPDATE us_household_income t1
+		JOIN (
+			SELECT *, 
+				CASE 
+					WHEN ALand = 0 THEN ROUND(AVG(ALand) OVER(PARTITION BY County))
+					ELSE ALand
+				END AS Avg_ALand
+			FROM us_household_income
+			) AS t2
+		ON t1.row_id = t2.row_id
+		SET t1.ALand = t2.Avg_ALand
+		;
+
+	-- Column: AWater
+    
+		-- Part 1: Verifying if there are missing values in column 'AWater'
+		SELECT State_Name, County, Place, AWater
+		FROM us_household_income
+		WHERE 
+			AWater = 0 OR 
+			AWater IS NULL OR
+			AWater = ''
+		;
+
+		-- Part 2: Setting up code to add to UPDATE Statement
+
+		SELECT State_Name, County, Place, AWater, ROUND(AVG(AWater) OVER(PARTITION BY County)) AS Avg_AWater
+		FROM us_household_income
+		ORDER BY 4, 1
+		;
+
+		SELECT *, 
+			CASE 
+				WHEN AWater = 0 THEN ROUND(AVG(AWater) OVER(PARTITION BY County))
+				ELSE AWater
+			END AS Avg_AWater
+		FROM us_household_income
+		;
+
+		SELECT *
+		FROM us_household_income t1
+		JOIN (
+			SELECT *, 
+				CASE 
+					WHEN AWater = 0 THEN ROUND(AVG(AWater) OVER(PARTITION BY County))
+					ELSE AWater
+				END AS Avg_AWater
+			FROM us_household_income
+			) AS t2
+		ON t1.row_id = t2.row_id
+		;
+
+		-- Part 3: Populating empty cells with the average AWater value by County
+
+		UPDATE us_household_income t1
+		JOIN (
+			SELECT *, 
+				CASE 
+					WHEN AWater = 0 THEN ROUND(AVG(AWater) OVER(PARTITION BY County))
+					ELSE AWater
+				END AS Avg_AWater
+			FROM us_household_income
+			) AS t2
+		ON t1.row_id = t2.row_id
+		SET t1.AWater = t2.Avg_AWater
+		;
