@@ -1,7 +1,7 @@
 # US HOUSEHOLD INCOME PROJECT: EXPLORATORY DATA ANALYSIS
 
 	# Table of Content: 
-		# Area of Land & Area of Water Analysis in US
+	# Area of Land & Area of Water Analysis in US
         # Average & Median Household Income Analysis in US
         
 	USE us_house_income;
