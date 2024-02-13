@@ -1,29 +1,33 @@
 #WORLD LIFE EXPECTANCY PROJECT: DATA CLEANING
-
-	# Table of Content:
-				# Removing Duplicates
+------------------------------------------------------------------------------------------------------------------------------
+	#Project Outline:
+		# Removing Duplicates
                 # Dealing with Null/Blank Values
+		# Populating missing values with average
+------------------------------------------------------------------------------------------------------------------------------
+	
+	SELECT * FROM world_life_expectancy;
 
-SELECT * FROM world_life_expectancy;
-
+------------------------------------------------------------------------------------------------------------------------------
 -- Part 1: finding duplicate values
-
+------------------------------------------------------------------------------------------------------------------------------
 		#1. Verifying if there are duplicate rows
 
 				SELECT country,
-								year, 
-								count(concat(country, year))
+					year, 
+					count(concat(country, year))
 				FROM world_life_expectancy
 				GROUP BY country, year
 				HAVING count(concat(country, year)) > 1;
 
 				#2. Locating Row_Id for duplicate rows
+					
 				SELECT *
 				FROM
-							(SELECT Row_id,
-									concat(country, year),
-									ROW_NUMBER() OVER(PARTITION BY concat(country, year) ORDER BY concat(country, year)) as row_num
-							FROM world_life_expectancy) as row_table
+					(SELECT Row_id,
+						concat(country, year),
+						ROW_NUMBER() OVER(PARTITION BY concat(country, year) ORDER BY concat(country, year)) as row_num
+						FROM world_life_expectancy) as row_table
 				WHERE row_num > 1;
 
 
@@ -39,9 +43,9 @@ SELECT * FROM world_life_expectancy;
 						 FROM world_life_expectancy) as row_table
 				WHERE row_num > 1);
 
-
+------------------------------------------------------------------------------------------------------------------------------
 -- Part 2: filling blanks with values
-
+------------------------------------------------------------------------------------------------------------------------------
 				#'Status' Column: Checking for blank values in 'Status' column
 
 				SELECT DISTINCT(status)
@@ -93,9 +97,9 @@ SELECT * FROM world_life_expectancy;
 				FROM worldlifexpectancy_backup t1
 				JOIN worldlifexpectancy_backup t2
 					ON t1.Country = t2.Country;
-    
+------------------------------------------------------------------------------------------------------------------------------    
 #Part 3: populating life expectancy missing values with average
-
+------------------------------------------------------------------------------------------------------------------------------
 				SELECT  t1.country, t1.year, t1.`lifeexpectancy`, t2.country, t2.year, t2.`lifeexpectancy`
 				FROM world_life_expectancy t1
 				JOIN world_life_expectancy t2
@@ -120,9 +124,8 @@ SELECT * FROM world_life_expectancy;
 								AND w1.year = w3.year + 1
 				WHERE w1.`lifeexpectancy` = ' ' ;
 
-				# 'Life expectancy' Column: Populating blank 'Life expectancy' values by averaging the previous AND following years' life expectancy
 
-				UPDATE  world_life_expectancy w1
+				UPDATE world_life_expectancy w1
 				JOIN world_life_expectancy w2
 						ON w1.country = w2.country
 						AND w1.year = w2.year -1
@@ -131,6 +134,10 @@ SELECT * FROM world_life_expectancy;
 						AND w1.year = w3.year +1
 				SET w1.`lifeexpectancy` = round((w2.`lifeexpectancy` +  w3.`lifeexpectancy`)/ 2,1)
 				WHERE w1.`lifeexpectancy` = ' ' ;
+
+#-------------------------------------------------------------#-----------------------------------------------------------------#
+					
+				
 
 
 
