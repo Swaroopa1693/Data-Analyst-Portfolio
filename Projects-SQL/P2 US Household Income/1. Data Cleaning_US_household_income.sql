@@ -1,19 +1,19 @@
 # US HOUSEHOLD INCOME PROJECT: DATA CLEANING
-
+---------------------------------------------------------------------------------------------------------------
 	# Table of Content: 
 	# Removing Duplicates
 	# Standardizing Data
         # Dealing With Null/Blank Values
-        
+---------------------------------------------------------------------------------------------------------------       
 USE us_house_income;
 SELECT * FROM us_household_income; 
 SELECT * FROM us_household_income_statistics;
 
 ALTER TABLE us_household_income_statistics RENAME COLUMN `ï»¿id` TO `id`;
 
-
--- REMOVING DUPLICATES --
-
+---------------------------------------------------------------------------------------------------------------
+#1.REMOVING DUPLICATES --
+---------------------------------------------------------------------------------------------------------------
 	-- Part 1: Verifying if there are duplicate rows in the dataset
 	SELECT id, COUNT(id)
 	FROM us_household_income
@@ -46,9 +46,9 @@ ALTER TABLE us_household_income_statistics RENAME COLUMN `ï»¿id` TO `id`;
 		WHERE Row_Count > 1
 	)
 	;    
-    
--- STANDARDIZING DATA --
-
+ ---------------------------------------------------------------------------------------------------------------   
+#2.STANDARDIZING DATA 
+---------------------------------------------------------------------------------------------------------------
 	-- Column: State_Name 
 
 		-- Part 1: Verifying if there are name outliers in column 'State_Name'
@@ -81,9 +81,9 @@ ALTER TABLE us_household_income_statistics RENAME COLUMN `ï»¿id` TO `id`;
 		SET Type = 'Borough'
 			WHERE Type = 'Boroughs'
 		;
-
--- DEALING WITH NULL/BLANK VALUES --
-
+---------------------------------------------------------------------------------------------------------------
+#3.DEALING WITH NULL/BLANK VALUES 
+---------------------------------------------------------------------------------------------------------------
 	-- Column: Place
     
 		-- Part 1: Verifying if there are missing values in column 'Place'
@@ -205,5 +205,5 @@ ALTER TABLE us_household_income_statistics RENAME COLUMN `ï»¿id` TO `id`;
 			FROM us_household_income
 			) AS t2
 		ON t1.row_id = t2.row_id
-		SET t1.AWater = t2.Avg_AWater
-		;
+		SET t1.AWater = t2.Avg_AWater;
+#--------------------------------------------------#-------------------------------------------------------------#
