@@ -6,14 +6,14 @@ USE us_house_income;
 
 SELECT *
 FROM us_household_income;
-
-#1.Project Outline:
+---------------------------------------------------------------------------------------------------------------------------
+#Project Outline:
 	# 1. Design stored procedures that are going to clean all the data automatically
     	# 2. Implement functionality within the stored procedures to replicate tables and enact required data adjustments.
    	# 3. Set up an event scheduler to initiate the execution of the stored procedures at scheduled intervals.
 ---------------------------------------------------------------------------------------------------------------------------
-#2.Data Cleaning Steps:
-
+#1.Data Cleaning Steps:
+---------------------------------------------------------------------------------------------------------------------------
 	# Remove duplicates
 DELETE FROM us_household_income
 WHERE row_id IN ( 
@@ -49,11 +49,12 @@ WHERE `Type` = 'CPD';
 UPDATE us_household_income
 SET `Type` = 'Borough'
 WHERE `Type` = 'Boroughs';
----------------------------------------------------------------------------------------------------------------------
--- Stored Procedures Steps:
+--------------------------------------------------------------------------------------------------------------------------
+#2.Stored Procedures Steps:
 	#Segment 1: Establishing a Duplicate Table
  	#Segment 2: Transferring Data to the Newly Created Table
  	#Segment 3: Implementing Data Cleaning Queries
+---------------------------------------------------------------------------------------------------------------------------
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS copy_and_data_clean;
@@ -143,9 +144,9 @@ FROM us_household_income_cleaned;
 
 SELECT DISTINCT `Type`
 FROM us_household_income_cleaned;
------------------------------------------------------------------------------------------------------------------------
--- Creating Event
-
+---------------------------------------------------------------------------------------------------------------------------
+#3.Creating Event
+---------------------------------------------------------------------------------------------------------------------------
 DROP EVENT IF EXISTS run_data_cleaning;
 CREATE EVENT run_data_cleaning
 	ON SCHEDULE EVERY 2 MINUTE
@@ -154,3 +155,4 @@ CREATE EVENT run_data_cleaning
 SELECT DISTINCT TimeStamp FROM us_household_income_cleaned;
 
 SHOW EVENTS;
+#-----------------------------------------------------------#----------------------------------------------------------------#
