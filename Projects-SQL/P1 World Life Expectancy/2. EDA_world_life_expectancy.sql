@@ -1,18 +1,18 @@
 # WORLD LIFE EXPECTANCY PROJECT: EXPLORATORY DATA ANALYSIS
-
-	# Table of Content:
-	# 15-Year Life Expectancy Trend By Country
-	# Correlation between life expectancy and GDP
-	# Correlation between life expectancy and BMI
-	# Average Life Expectancy Comparison: Developed vs. Developing Countries
-	# Adult Mortality's Impact on Life Expectancy
-
+-------------------------------------------------------------------------------------------------------------------------------
+#Project Outline:
+	# 1. 15-Year Life Expectancy Trend By Country
+	# 2. Correlation between life expectancy and GDP
+	# 3. Correlation between life expectancy and BMI
+	# 4. Average Life Expectancy Comparison: Developed vs. Developing Countries
+	# 5. Adult Mortality Impact on Life Expectancy
+-------------------------------------------------------------------------------------------------------------------------------
 USE world_life_expectancy;
 SELECT * FROM world_life_expectancy;
 
-
---  Part 1: life expectancy over the past 15 years
-
+-------------------------------------------------------------------------------------------------------------------------------
+#1.  Part 1: life expectancy over the past 15 years
+-------------------------------------------------------------------------------------------------------------------------------
 			#Retrieving Life Expectancy Growth from 2007 to 2022 by country
 			SELECT 
 				Country, 
@@ -36,8 +36,9 @@ SELECT * FROM world_life_expectancy;
 			GROUP By Year
 			ORDER BY Year;
 
---  Part 2: correlation with life expectancy and GDP
-
+-------------------------------------------------------------------------------------------------------------------------------
+#2.  Part 2: correlation with life expectancy and GDP
+-------------------------------------------------------------------------------------------------------------------------------
 			#Retrieving average life expectancy and average gdp by country
             
 			SELECT 
@@ -60,9 +61,9 @@ SELECT * FROM world_life_expectancy;
 					ROUND(AVG(CASE WHEN GDP <= 1500 THEN `Life expectancy` ELSE NULL END), 1) AS Low_GDP_Life_Expectancy
 			FROM world_life_expectancy;
     
-    
--- Part 3: Average life expectancy comparison: DEVELOPED VS. DEVELOPING countries
-
+-------------------------------------------------------------------------------------------------------------------------------    
+#3. Part 3: Average life expectancy comparison: DEVELOPED VS. DEVELOPING countries
+-------------------------------------------------------------------------------------------------------------------------------
 				# Retrieving the average life expectancy by status of country
 				SELECT 
 					Status, 
@@ -71,9 +72,9 @@ SELECT * FROM world_life_expectancy;
 				FROM world_life_expectancy
 				GROUP BY Status;
 
-
--- Part 4:  Correlation with life exp and BMI
-
+-------------------------------------------------------------------------------------------------------------------------------
+#4. Part 4:  Correlation with life exp and BMI
+-------------------------------------------------------------------------------------------------------------------------------
 				#Retrieving average life expectancy and average BMI by country HEADER
 				SELECT 
 						Country, 
@@ -85,9 +86,9 @@ SELECT * FROM world_life_expectancy;
 						Avg_Life_Exp > 0 AND
 						Avg_BMI > 0
 					ORDER BY Avg_BMI DESC;
-
--- Part 5: Adult Mortality impact on life expectancy
-
+-------------------------------------------------------------------------------------------------------------------------------
+#5. Part 5: Adult Mortality impact on life expectancy
+-------------------------------------------------------------------------------------------------------------------------------
 				# Retrieving the rolling total of adult mortality by country by year
 					SELECT
 						Country,
@@ -96,3 +97,5 @@ SELECT * FROM world_life_expectancy;
 						`Adult Mortality`,
 						SUM(`Adult Mortality`) OVER(PARTITION BY Country ORDER BY Year) AS Adult_Mortality_Rolling_Total
 					FROM world_life_expectancy;
+
+#--------------------------------------------------------------#-----------------------------------------------------------------#
