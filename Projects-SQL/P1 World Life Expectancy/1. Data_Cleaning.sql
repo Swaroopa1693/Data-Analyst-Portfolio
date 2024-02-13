@@ -1,15 +1,15 @@
 #WORLD LIFE EXPECTANCY PROJECT: DATA CLEANING
 ------------------------------------------------------------------------------------------------------------------------------
 	#Project Outline:
-		# Removing Duplicates
-                # Dealing with Null/Blank Values
-		# Populating missing values with average
+		# 1. Removing Duplicates
+                # 2. Dealing with Null/Blank Values
+		# 3. Populating missing values with average
 ------------------------------------------------------------------------------------------------------------------------------
 	
 	SELECT * FROM world_life_expectancy;
 
 ------------------------------------------------------------------------------------------------------------------------------
--- Part 1: finding duplicate values
+#1. Part 1: finding duplicate values
 ------------------------------------------------------------------------------------------------------------------------------
 		#1. Verifying if there are duplicate rows
 
@@ -44,7 +44,7 @@
 				WHERE row_num > 1);
 
 ------------------------------------------------------------------------------------------------------------------------------
--- Part 2: filling blanks with values
+#2. Part 2: filling blanks with values
 ------------------------------------------------------------------------------------------------------------------------------
 				#'Status' Column: Checking for blank values in 'Status' column
 
@@ -98,7 +98,7 @@
 				JOIN worldlifexpectancy_backup t2
 					ON t1.Country = t2.Country;
 ------------------------------------------------------------------------------------------------------------------------------    
-#Part 3: populating life expectancy missing values with average
+#3. Part 3: populating life expectancy missing values with average
 ------------------------------------------------------------------------------------------------------------------------------
 				SELECT  t1.country, t1.year, t1.`lifeexpectancy`, t2.country, t2.year, t2.`lifeexpectancy`
 				FROM world_life_expectancy t1
