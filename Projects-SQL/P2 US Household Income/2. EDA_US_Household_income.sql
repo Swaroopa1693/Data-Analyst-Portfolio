@@ -1,16 +1,16 @@
 # US HOUSEHOLD INCOME PROJECT: EXPLORATORY DATA ANALYSIS
-
-	# Table of Content: 
+------------------------------------------------------------------------------------------------------------------------------
+#Project Outline: 
 	# Area of Land & Area of Water Analysis in US
         # Average & Median Household Income Analysis in US
-        
+------------------------------------------------------------------------------------------------------------------------------        
 	USE us_house_income;
 	SELECT * FROM us_household_income; 
 	SELECT * FROM us_household_income_statistics;
     
-    
--- AREA OF LAND & AREA OF WATER ANALYSIS IN US --
-
+------------------------------------------------------------------------------------------------------------------------------ 
+#1. AREA OF LAND & AREA OF WATER ANALYSIS IN US --
+------------------------------------------------------------------------------------------------------------------------------
 	-- Part 1: Identifying Top 10 Largest States by Land -- 
 	SELECT 
 		State_Name, 
@@ -30,9 +30,9 @@
 	ORDER BY 2 DESC
 	LIMIT 10
 	;
-    
--- AVERAGE & MEDIAN HOUSEHOLD INCOME ANALYSIS IN US --
-
+------------------------------------------------------------------------------------------------------------------------------    
+#2. AVERAGE & MEDIAN HOUSEHOLD INCOME ANALYSIS IN US
+------------------------------------------------------------------------------------------------------------------------------
 	-- Part 1: Identifying the National Average & Median Household Income
 	SELECT 
 		ROUND(AVG(us.Mean)) AS Average_Income,
@@ -84,3 +84,4 @@
     HAVING Count_Type > 100 # Removing Outliers
 	ORDER BY 3 DESC
 	;
+#-----------------------------------------------------------------#-------------------------------------------------------------#
