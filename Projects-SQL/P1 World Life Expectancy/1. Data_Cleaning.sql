@@ -11,7 +11,7 @@
 ------------------------------------------------------------------------------------------------------------------------------
 #1. Part 1: finding duplicate values
 ------------------------------------------------------------------------------------------------------------------------------
-		#1. Verifying if there are duplicate rows
+				#1. Verifying if there are duplicate rows
 
 				SELECT country,
 					year, 
@@ -31,7 +31,8 @@
 				WHERE row_num > 1;
 
 
-				#3. Removing duplicate rows from table
+				#3. Removing duplicate rows from a table
+
 				DELETE FROM world_life_expectancy
 				WHERE
 						Row_ID IN 
@@ -79,19 +80,19 @@
 
 				UPDATE  world_life_expectancy t1
 				JOIN world_life_expectancy t2
-								ON t1.Country = t2.Country
+						ON t1.Country = t2.Country
 				SET t1.status = 'Developing'
-								WHERE t1.status = ' '
-								and t2.status <> ' '
-								and t2.status = 'Developing';
+						WHERE t1.status = ' '
+						AND t2.status <> ' '
+						AND t2.status = 'Developing';
 
 				UPDATE world_life_expectancy t1
 				JOIN world_life_expectancy t2
-								ON t1.Country = t2.Country
+						ON t1.Country = t2.Country
 				SET t1.status = 'Developed'
-								WHERE t1.status = ' '
-								and t2.status <> ' '
-								and t2.status = 'Developed';
+						WHERE t1.status = ' '
+						AND t2.status <> ' '
+						ON t2.status = 'Developed';
 
 				SELECT t1.country, t1.status, t2.country, t2.status
 				FROM worldlifexpectancy_backup t1
@@ -106,22 +107,22 @@
 					ON t1.year = t2.year - 1;
 
 
-				SELECT country,year, `lifeexpectancy`
+				SELECT country, year, `lifeexpectancy`
 				FROM world_life_expectancy;
 
 				#'Life expectancy' Column: Setting up code to add to UPDATE Statement
                 
 				SELECT w1.country, w1.year, w1.`lifeexpectancy`,
-								w2.country, w2.year, w2.`lifeexpectancy`,
-								w3.country, w3.year, w3.`lifeexpectancy`,
-								round((w2.`lifeexpectancy` +  w3.`lifeexpectancy`)/ 2,1)
+						w2.country, w2.year, w2.`lifeexpectancy`,
+						w3.country, w3.year, w3.`lifeexpectancy`,
+						round((w2.`lifeexpectancy` +  w3.`lifeexpectancy`)/ 2,1)
 				FROM world_life_expectancy w1
 				JOIN world_life_expectancy w2
-								ON w1.country = w2.country
-								AND w1.year = w2.year -1
+						ON w1.country = w2.country
+						AND w1.year = w2.year -1
 				JOIN world_life_expectancy w3
-								ON w1.country = w3.country
-								AND w1.year = w3.year + 1
+						ON w1.country = w3.country
+						AND w1.year = w3.year + 1
 				WHERE w1.`lifeexpectancy` = ' ' ;
 
 
