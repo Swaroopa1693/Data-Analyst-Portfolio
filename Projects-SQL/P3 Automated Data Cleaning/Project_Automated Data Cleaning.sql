@@ -1,16 +1,18 @@
--- AUTOMATED DATA CLEANING PROJECT --
+
+#AUTOMATED DATA CLEANING PROJECT
+---------------------------------------------------------------------------------------------------------------------------
 
 USE us_house_income;
 
 SELECT *
 FROM us_household_income;
 
--- Project Agenda:
-	# Create stored procedures that is going to clean all the data automatically
-    # Within the stored procedures, create a duplicate table and insert all the data into it with few modifications
-    # Create an event that runs the stored procedures on a specified timer
-
--- Data Cleaning Steps:
+#1.Project Outline:
+	# 1. Design stored procedures that are going to clean all the data automatically
+    	# 2. Implement functionality within the stored procedures to replicate tables and enact required data adjustments.
+   	# 3. Set up an event scheduler to initiate the execution of the stored procedures at scheduled intervals.
+---------------------------------------------------------------------------------------------------------------------------
+#2.Data Cleaning Steps:
 
 	# Remove duplicates
 DELETE FROM us_household_income
@@ -20,10 +22,10 @@ FROM (
 	SELECT row_id, id, ROW_NUMBER() OVER(PARTITION BY id ORDER BY id) AS row_num
     FROM us_household_income
     ) AS duplicates
-WHERE row_num > 1
-);
+WHERE row_num > 1);
 
 	# Standardization
+
 UPDATE us_household_income
 SET State_Name = 'Georgia'
 WHERE State_Name ='georia';
@@ -47,18 +49,18 @@ WHERE `Type` = 'CPD';
 UPDATE us_household_income
 SET `Type` = 'Borough'
 WHERE `Type` = 'Boroughs';
-
+---------------------------------------------------------------------------------------------------------------------
 -- Stored Procedures Steps:
-	# Part 1: Create a copy table
-    # Part 2: Copy data into new table
-    # Part 3: Add data cleaning queries
+	#Segment 1: Establishing a Duplicate Table
+ 	#Segment 2: Transferring Data to the Newly Created Table
+ 	#Segment 3: Implementing Data Cleaning Queries
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS copy_and_data_clean;
 CREATE PROCEDURE copy_and_data_clean()
 BEGIN
 
-	# Part 1:
+	#Segment 1:
 	CREATE TABLE IF NOT EXISTS `us_household_income_cleaned` (
 	  `row_id` int DEFAULT NULL,
 	  `id` int DEFAULT NULL,
@@ -79,12 +81,12 @@ BEGIN
 	  `TimeStamp` TIMESTAMP DEFAULT NULL
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-	# Part 2:
+	#Segment 2:
 	INSERT INTO us_household_income_cleaned
-	SELECT *, CURRENT_TIMESTAMP # CURRENT_TIMESTAMP: Taking in current day, month, year, time
+	SELECT *, CURRENT_TIMESTAMP #CURRENT_TIMESTAMP: Taking in the current day, month, year, time
 	FROM us_household_income;
     
-    # Part 3:
+    	#Segment 3:
 	DELETE FROM us_household_income_cleaned
 	WHERE row_id IN ( 
 	SELECT row_id
@@ -93,7 +95,7 @@ BEGIN
 			ROW_NUMBER() OVER(
 				PARTITION BY id, 
                 `TimeStamp` 
-                ORDER BY id, `TimeStamp`) AS row_num # Removing duplicates by 'TimeStamp' dataset
+                ORDER BY id, `TimeStamp`) AS row_num #Removing duplicates by 'TimeStamp' dataset
 		FROM us_household_income_cleaned
 		) AS duplicates
 	WHERE row_num > 1
@@ -141,7 +143,7 @@ FROM us_household_income_cleaned;
 
 SELECT DISTINCT `Type`
 FROM us_household_income_cleaned;
-
+-----------------------------------------------------------------------------------------------------------------------
 -- Creating Event
 
 DROP EVENT IF EXISTS run_data_cleaning;
